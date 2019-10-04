@@ -1,5 +1,12 @@
 #Code for Data Clean-up
 
+#Libraries used in the code
+  library("ggpubr")
+  library(tidyr)
+  library(dplyr)
+  library(lubridate)
+  
+  #Read data, drop un-needed columns
   DATACRIME=read.csv("Crimes_-_2001_to_present.csv")
   summary(DATACRIME)
   drops <- c("ID","Case.Number","IUCR","Historical.Wards.2003.2015","Census.Tracts","Community.Area","Updated.On","Ward","X.Coordinate","Y.Coordinate","Community.Areas")
@@ -13,9 +20,7 @@
   X.coordinate_NA <- ifelse( is.na(DATA$X.Coordinate) , 1, 0 )
   sum(X.coordinate_NA) 
   
-  library("ggpubr")
-  length(Zip.code_NA)
-  cor.test(X.coordinate_NA,Zip.code_NA) # <- error in length of arrays
+  #Factorization of data for manipulation
   DATA$Block <- factor(DATA$Block) #
   DATA$Primary.Type <- factor(DATA$Primary.Type)
   DATA$Description <- factor(DATA$Description)
@@ -29,22 +34,15 @@
   DATA$Date <- factor (DATA$Date)
   complete.cases(DATA)
   DATA2 <- na.omit(DATA)
-  summary(DATA2)
   
-  library(tidyr)
-  library(dplyr)
-  library(lubridate)
   
-
   #This section cleans the date and time columns of the data.  Output is 1 column with DateTime, 1 column with Time only, and 1 Column with Hour only.
-  DATA2$Date[1]
   CleanDateTime <- strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p")
-  CleanDateTime[1]
   Hour <- format(strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p"),"%H")
-  c(length(DATA2$Date),length(CleanDateTime),length(Hour))
+  c(length(DATA2$Date),length(CleanDateTime),length(Hour))  #verifies that lengths match across arrays
   
       
-#Map Visualization
+#Map Visualization <- what is it that you want to achieve with this?
   library(maps)
   library(mapdata)
   map("worldHires" , "Canada"  , xlim=c(-141,-53) , ylim=c(40,85), col="Gray90" , fill=TRUE)
