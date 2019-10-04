@@ -43,6 +43,8 @@
   
       
 #Map Visualization <- what is it that you want to achieve with this?
+#This was just a test for me to see how the map tool works and I wanted to go from there to a map of Chicago
+#but I think there are smarter ways to do it
   library(maps)
   library(mapdata)
   map("worldHires" , "Canada"  , xlim=c(-141,-53) , ylim=c(40,85), col="Gray90" , fill=TRUE)
