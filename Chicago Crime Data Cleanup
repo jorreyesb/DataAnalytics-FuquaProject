@@ -1,37 +1,57 @@
-DATACRIME=read.csv("Crimes_-_2001_to_present.csv")
-summary(DATACRIME)
-drops <- c("ID","Case.Number","IUCR","Historical.Wards.2003.2015","Census.Tracts","Community.Area","Updated.On","Ward","X.Coordinate","Y.Coordinate","Community.Areas")
-names(DATACRIME) %in% drops
-!(names(DATACRIME) %in% drops)
-DATA <- DATACRIME[,!(names(DATACRIME) %in% drops)]
-summary(DATA)
-Zip.code_NA <-  ifelse( is.na(DATA$Zip.Codes) , 1, 0 )
-sum(Zip.code_NA)
-sum(Zip.code_NA)/length(Zip.code_NA)
-X.coordinate_NA <- ifelse( is.na(DATA$X.Coordinate) , 1, 0 )
-sum(X.coordinate_NA) 
-library("ggpubr")
-cor.test(X.coordinate_NA,Zip.code_NA)
-DATA$Block <- factor(DATA$Block)
-DATA$Primary.Type <- factor(DATA$Primary.Type)
-DATA$Description <- factor(DATA$Description)
-DATA$Location.Description <- factor(DATA$Location.Description)
-DATA$Beat <- factor(DATA$Beat)
-DATA$District <- factor(DATA$District)
-DATA$FBI.Code <- factor(DATA$FBI.Code)
-DATA$Year <- factor(DATA$Year)
-DATA$Domestic <- factor(DATA$Domestic)
-DATA$Arrest<- factor(DATA$Arrest)
-DATA$Date <- factor (DATA$Date)
-complete.cases(DATA)
-DATA2 <- na.omit(DATA)
-summary(DATA2)
-library(maps)
-library(mapdata)
-map("worldHires" , "Canada"  , xlim=c(-141,-53) , ylim=c(40,85), col="Gray90" , fill=TRUE)
-data("world.cities")
-data("state.vbmMapEnv")
-map("worldHires" , "USA"  , xlim=c(-190,-41) , ylim=c(10,85), col="Gray90" , fill=TRUE)
-map.cities(x = world.cities, country = "USA", 
-install.packages("ggmap")
-library(ggmap)
+#Code for Data Clean-up
+
+  DATACRIME=read.csv("Crimes_-_2001_to_present.csv")
+  summary(DATACRIME)
+  drops <- c("ID","Case.Number","IUCR","Historical.Wards.2003.2015","Census.Tracts","Community.Area","Updated.On","Ward","X.Coordinate","Y.Coordinate","Community.Areas")
+  names(DATACRIME) %in% drops
+  !(names(DATACRIME) %in% drops)
+  DATA <- DATACRIME[,!(names(DATACRIME) %in% drops)]
+  summary(DATA)
+  Zip.code_NA <-  ifelse( is.na(DATA$Zip.Codes) , 1, 0 )
+  sum(Zip.code_NA)
+  sum(Zip.code_NA)/length(Zip.code_NA)
+  X.coordinate_NA <- ifelse( is.na(DATA$X.Coordinate) , 1, 0 )
+  sum(X.coordinate_NA) 
+  
+  library("ggpubr")
+  length(Zip.code_NA)
+  cor.test(X.coordinate_NA,Zip.code_NA) # <- error in length of arrays
+  DATA$Block <- factor(DATA$Block) #
+  DATA$Primary.Type <- factor(DATA$Primary.Type)
+  DATA$Description <- factor(DATA$Description)
+  DATA$Location.Description <- factor(DATA$Location.Description)
+  DATA$Beat <- factor(DATA$Beat)
+  DATA$District <- factor(DATA$District)
+  DATA$FBI.Code <- factor(DATA$FBI.Code)
+  DATA$Year <- factor(DATA$Year)
+  DATA$Domestic <- factor(DATA$Domestic)
+  DATA$Arrest<- factor(DATA$Arrest)
+  DATA$Date <- factor (DATA$Date)
+  complete.cases(DATA)
+  DATA2 <- na.omit(DATA)
+  summary(DATA2)
+  
+  library(tidyr)
+  library(dplyr)
+  library(lubridate)
+  
+
+  #This section cleans the date and time columns of the data.  Output is 1 column with DateTime, 1 column with Time only, and 1 Column with Hour only.
+  DATA2$Date[1]
+  CleanDateTime <- strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p")
+  CleanDateTime[1]
+  Hour <- format(strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p"),"%H")
+  c(length(DATA2$Date),length(CleanDateTime),length(Hour))
+  
+      
+#Map Visualization
+  library(maps)
+  library(mapdata)
+  map("worldHires" , "Canada"  , xlim=c(-141,-53) , ylim=c(40,85), col="Gray90" , fill=TRUE)
+  data("world.cities")
+  data("state.vbmMapEnv")
+  map("worldHires" , "USA"  , xlim=c(-190,-41) , ylim=c(10,85), col="Gray90" , fill=TRUE)
+  map.cities(x = world.cities, country = "USA", 
+             install.packages("ggmap")
+             library(ggmap)
+             
