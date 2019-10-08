@@ -1,57 +1,48 @@
-#Code for Data Clean-up
+@@ -1,5 +1,12 @@
+  #Code for Data Clean-up
+  
+  #Libraries used in the code
+library("ggpubr")
+library(tidyr)
+library(dplyr)
+library(lubridate)
 
-#Libraries used in the code
-  library("ggpubr")
-  library(tidyr)
-  library(dplyr)
-  library(lubridate)
-  
-  #Read data, drop un-needed columns
-  DATACRIME=read.csv("Crimes_-_2001_to_present.csv")
-  summary(DATACRIME)
-  drops <- c("ID","Case.Number","IUCR","Historical.Wards.2003.2015","Census.Tracts","Community.Area","Updated.On","Ward","X.Coordinate","Y.Coordinate","Community.Areas")
-  names(DATACRIME) %in% drops
-  !(names(DATACRIME) %in% drops)
-  DATA <- DATACRIME[,!(names(DATACRIME) %in% drops)]
-  summary(DATA)
-  Zip.code_NA <-  ifelse( is.na(DATA$Zip.Codes) , 1, 0 )
-  sum(Zip.code_NA)
-  sum(Zip.code_NA)/length(Zip.code_NA)
-  X.coordinate_NA <- ifelse( is.na(DATA$X.Coordinate) , 1, 0 )
-  sum(X.coordinate_NA) 
-  
-  #Factorization of data for manipulation
-  DATA$Block <- factor(DATA$Block) #
-  DATA$Primary.Type <- factor(DATA$Primary.Type)
-  DATA$Description <- factor(DATA$Description)
-  DATA$Location.Description <- factor(DATA$Location.Description)
-  DATA$Beat <- factor(DATA$Beat)
-  DATA$District <- factor(DATA$District)
-  DATA$FBI.Code <- factor(DATA$FBI.Code)
-  DATA$Year <- factor(DATA$Year)
-  DATA$Domestic <- factor(DATA$Domestic)
-  DATA$Arrest<- factor(DATA$Arrest)
+#Read data, drop un-needed columns
+DATACRIME=read.csv("Crimes_-_2001_to_present.csv")
+summary(DATACRIME)
+drops <- c("ï..ID","ID","Case.Number","IUCR","Historical.Wards.2003.2015","Census.Tracts","Community.Area","Updated.On","Ward","X.Coordinate","Y.Coordinate","Community.Areas")
+DATA <- DATACRIME[,!(names(DATACRIME) %in% drops)]
+colnames(DATA)
+Zip.code_NA <-  ifelse(is.na(DATA$Zip.Codes) , 1, 0 )
+sum(Zip.code_NA)
+sum(Zip.code_NA)/length(Zip.code_NA)
+X.coordinate_NA <- ifelse( is.na(DATA$X.Coordinate) , 1, 0 )
+sum(X.coordinate_NA)
+
+#Factorization of data for manipulation
+DATA$Block <- factor(DATA$Block) #
+DATA$Primary.Type <- factor(DATA$Primary.Type)
+DATA$Description <- factor(DATA$Description)
   DATA$Date <- factor (DATA$Date)
-  complete.cases(DATA)
-  DATA2 <- na.omit(DATA)
-  
-  
-  #This section cleans the date and time columns of the data.  Output is 1 column with DateTime, 1 column with Time only, and 1 Column with Hour only.
-  CleanDateTime <- strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p")
-  Hour <- format(strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p"),"%H")
-  c(length(DATA2$Date),length(CleanDateTime),length(Hour))  #verifies that lengths match across arrays
-  
-      
-#Map Visualization <- what is it that you want to achieve with this?
-#This was just a test for me to see how the map tool works and I wanted to go from there to a map of Chicago
-#but I think there are smarter ways to do it
-  library(maps)
-  library(mapdata)
-  map("worldHires" , "Canada"  , xlim=c(-141,-53) , ylim=c(40,85), col="Gray90" , fill=TRUE)
-  data("world.cities")
-  data("state.vbmMapEnv")
-  map("worldHires" , "USA"  , xlim=c(-190,-41) , ylim=c(10,85), col="Gray90" , fill=TRUE)
-  map.cities(x = world.cities, country = "USA", 
-             install.packages("ggmap")
-             library(ggmap)
-             
+complete.cases(DATA)
+DATA2 <- na.omit(DATA)
+
+#This section cleans the date and time columns of the data.  Output is 1 column with DateTime, 1 column with Time only, and 1 Column with Hour only.
+DATA2$Date[1]
+CleanDateTime <- strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p")
+CleanDateTime[1]
+Hour <- format(strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p"),"%H")
+c(length(DATA2$Date),length(CleanDateTime),length(Hour))  #verifies that lengths match across arrays
+DATA2 <- cbind(DATA2,CleanDateTime,Hour)
+colnames(DATA2)
+ 
+#This section will analyze relationships across elements in the data (Association Rules in R)
+install.packages("arules")
+install.packages("arulesViz")
+
+DATA2$Domestic[1]
+keep <- c("Description","Arrest","Zip.Codes")
+RulesDataset <- DATA2[,(names(DATA2) %in% keep)]
+colnames(RulesDataset)
+Crime_rules <- apriori(RulesDataset, parameter = list(support = 0.01, confidence = 0.5))
+inspect(head(sort(Crime_rules, by = "confidence"), 20))
