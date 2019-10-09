@@ -1,0 +1,221 @@
+#Libraries used in the code
+#Code for Data Clean-up
+
+#Libraries used in the code
+library(ggpubr)
+library(tidyr)
+library(dplyr)
+library(lubridate)
+
+#Read data, drop un-needed columns
+DATACRIME=read.csv("Crimes_-_2001_to_present.csv")
+summary(DATACRIME)
+drops <- c("ID","Case.Number","IUCR","Historical.Wards.2003.2015","Census.Tracts","Community.Area","Updated.On","Ward","X.Coordinate","Y.Coordinate","Community.Areas")
+names(DATACRIME) %in% drops
+!(names(DATACRIME) %in% drops)
+DATA <- DATACRIME[,!(names(DATACRIME) %in% drops)]
+summary(DATA)
+complete.cases(DATA)
+DATA2 <- na.omit(DATA)
+  
+#Factorization of data for manipulation
+DATA2$Block <- factor(DATA2$Block) 
+DATA2$Primary.Type <- factor(DATA2$Primary.Type)
+DATA2$Description <- factor(DATA2$Description)
+DATA2$Location.Description <- factor(DATA2$Location.Description)
+DATA2$Beat <- factor(DATA2$Beat)
+DATA2$District <- factor(DATA2$District)
+DATA2$FBI.Code <- factor(DATA2$FBI.Code)
+DATA2$Year <- factor(DATA2$Year)
+DATA2$Domestic <- factor(DATA2$Domestic)
+DATA2$Arrest<- factor(DATA2$Arrest)
+
+
+
+#This section cleans the date and time columns of the data.  Output is 1 column with DateTime, 1 column with Time only, and 1 Column with Hour only.
+CleanDateTime <- strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p")
+Hour <- format(strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p"),"%H")
+c(length(DATA2$Date),length(CleanDateTime),length(Hour))  #verifies that lengths match across arrays
+
+
+###Creating Subsets for calculation purposes otherwise running the code takes too long 
+#Global Subset for Years 2009 to 2018 (10 Year period for easier calculations)
+
+DataYear10 = subset(DATA2, subset = Year %in% c('2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018'))
+
+
+
+#Yearly Subsets 
+
+DataYear2019 <- DATA2[which(DATA2$Year == "2019"),]
+DataYear2018 <- DATA2[which(DATA2$Year == "2018"),]
+DataYear2017 <- DATA2[which(DATA2$Year == "2017"),]
+DataYear2016 <- DATA2[which(DATA2$Year == "2016"),]
+DataYear2015 <- DATA2[which(DATA2$Year == "2015"),]
+DataYear2014 <- DATA2[which(DATA2$Year == "2014"),]
+DataYear2013 <- DATA2[which(DATA2$Year == "2013"),]
+DataYear2012 <- DATA2[which(DATA2$Year == "2012"),]
+DataYear2011 <- DATA2[which(DATA2$Year == "2011"),]
+DataYear2010 <- DATA2[which(DATA2$Year == "2010"),]
+DataYear2009 <- DATA2[which(DATA2$Year == "2009"),]
+
+
+#District Subsets; can also be done in different ways
+
+DataDistrict1 <- DataYear10[which(DataYear10$District == "1"),]
+DataDistrict2 <- DataYear10[which(DataYear10$District == "2"),]
+DataDistrict3 <- DataYear10[which(DataYear10$District == "3"),]
+DataDistrict4 <- DataYear10[which(DataYear10$District == "4"),]
+DataDistrict5 <- DataYear10[which(DataYear10$District == "5"),]
+DataDistrict6 <- DataYear10[which(DataYear10$District == "6"),]
+DataDistrict7 <- DataYear10[which(DataYear10$District == "7"),]
+DataDistrict8 <- DataYear10[which(DataYear10$District == "8"),]
+DataDistrict9 <- DataYear10[which(DataYear10$District == "9"),]
+DataDistrict10 <- DataYear10[which(DataYear10$District == "10"),]
+DataDistrict11 <- DataYear10[which(DataYear10$District == "11"),]
+DataDistrict12 <- DataYear10[which(DataYear10$District == "12"),]
+DataDistrict13 <- DataYear10[which(DataYear10$District == "13"),]
+DataDistrict14 <- DataYear10[which(DataYear10$District == "14"),]
+DataDistrict15 <- DataYear10[which(DataYear10$District == "15"),]
+DataDistrict16 <- DataYear10[which(DataYear10$District == "16"),]
+DataDistrict17 <- DataYear10[which(DataYear10$District == "17"),]
+DataDistrict18 <- DataYear10[which(DataYear10$District == "18"),]
+DataDistrict19 <- DataYear10[which(DataYear10$District == "19"),]
+DataDistrict20 <- DataYear10[which(DataYear10$District == "20"),]
+DataDistrict21 <- DataYear10[which(DataYear10$District == "21"),]
+DataDistrict22 <- DataYear10[which(DataYear10$District == "22"),]
+DataDistrict23 <- DataYear10[which(DataYear10$District == "23"),]
+DataDistrict24 <- DataYear10[which(DataYear10$District == "24"),]
+DataDistrict25 <- DataYear10[which(DataYear10$District == "25"),]
+DataDistrict26 <- DataYear10[which(DataYear10$District == "26"),]
+DataDistrict27 <- DataYear10[which(DataYear10$District == "27"),]
+DataDistrict28 <- DataYear10[which(DataYear10$District == "28"),]
+DataDistrict29 <- DataYear10[which(DataYear10$District == "29"),]
+DataDistrict30 <- DataYear10[which(DataYear10$District == "30"),]
+DataDistrict31 <- DataYear10[which(DataYear10$District == "31"),]
+
+
+View(DataDistrict1)
+
+
+###Constructing a new table to plot crime development over time
+###Discriptive statistics with a time series
+
+install.packages("plyr")
+library(plyr)
+CrimeFrequency <- count(DataYear10, "Year")
+
+#afte running the counting code, plot the results; use a line for ("year","primary.type") to combine several types into one graph (if possibel)
+
+
+
+
+###This section cleans the date and time columns of the data.  Output is 1 column with DateTime, 1 column with Time only, and 1 Column with Hour only.
+###Use to plot the data not based on years but on hours of the day to see intra-day differences (across crimes or in general)
+
+DATA2$Date[1]
+CleanDateTime <- strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p")
+CleanDateTime[1]
+Hour <- format(strptime(DATA2$Date, format = "%m/%d/%Y %I:%M:%S %p"),"%H")
+c(length(DATA2$Date),length(CleanDateTime),length(Hour))  #verifies that lengths match across arrays
+DATA2 <- cbind(DATA2,CleanDateTime,Hour)
+colnames(DATA2)
+
+
+
+###After the descriptive time series analysis, plotting the data on a map for visualization
+
+
+install.packages("ggmap")
+install.packages("backports")
+library(ggmap)
+install.packages(c("ggplot2", "devtools", "dplyr", "stringr"))
+install.packages(c("maps", "mapdata"))
+
+library(ggplot2)
+library(maps)
+library(mapdata)
+
+install.packages("rjson")
+library(rjson)
+
+#Zoom into Illinois to find chicago there and (hopefully) plot the zip codes or districts
+
+illinois <- subset(states, region %in% c("illinois"))
+ggplot(data = illinois) + 
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "palegreen", color = "black") + 
+  coord_fixed(xlim = c(-88, - 87.5), ylim = c(41.6, 42), ratio = 1.3)
+
+
+
+###To predict percentage probability of which crime is more likely to be committed in which part of the city
+###we need to perform a multinominal regression
+
+install.packages("nnet")
+install.packages("ggplot2")
+install.packages("foreign")
+install.packages("reshape2")
+library(nnet)
+library(ggplot2)
+library(foreign)
+library(reshape2)
+test2 <- multinom(Arrest ~ Beat, data = DATA2) ###not enough system memory, vector is too big
+summary(test2)
+test3 <- multinom(Domestic ~ Beat, data = DATA2)  ###not enough system memory, vector is too big
+summary(test3)
+test4 <- multinom(Domestic ~ District, data = DATA2)
+summary(test4)
+test5 <- multinom(Primary.Type ~ District, data = DATA2)
+summary(test5)
+test6 <- multinom(Primary.Type ~ District, data = DataYear2018)
+summary(test6)
+
+
+
+
+###k-Means clustering test with Primary.Type and Location.Discritpion as two variabeles
+###k-means after we have aggregate numbers for the different districts
+
+summary(DATA2)
+
+simplecrime <- DATA2[,c(3,5)]
+summary(simplecrime)
+par(mar = c(5, 5, 3, 1))
+plot(simplecrime)  
+simplecrime_kmeans <- kmeans(simplecrime,4,nstart=10)
+
+
+###Doesnt work k-Means only works with continuous variables and not factors
+###first we need to do a multinominal regression for our prediciton
+###Use the prediction and the corresponding zip codes to then be able to cluster
+
+
+
+
+
+#Map Visualization <- what is it that you want to achieve with this?
+#This was just a test for me to see how the map tool works and I wanted to go from there to a map of Chicago
+#but I think there are smarter ways to do it
+library(maps)
+library(mapdata)
+map("worldHires" , "Canada"  , xlim=c(-141,-53) , ylim=c(40,85), col="Gray90" , fill=TRUE)
+data("world.cities")
+data("state.vbmMapEnv")
+map("worldHires" , "USA"  , xlim=c(-190,-41) , ylim=c(10,85), col="Gray90" , fill=TRUE)
+map.cities(x = world.cities, country = "USA",) 
+install.packages("ggmap")
+library(ggmap)
+           
+
+           
+#This section will analyze relationships across elements in the data (Association Rules in R)
+install.packages("arules")
+install.packages("arulesViz")
+           
+DATA2$Domestic[1]
+keep <- c("Description","Arrest","Zip.Codes")
+RulesDataset <- DATA2[,(names(DATA2) %in% keep)]
+colnames(RulesDataset)
+Crime_rules <- apriori(RulesDataset, parameter = list(support = 0.01, confidence = 0.5))
+inspect(head(sort(Crime_rules, by = "confidence"), 20))
+           
